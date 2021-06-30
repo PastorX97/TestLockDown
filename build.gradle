@@ -1,0 +1,29 @@
+buildscript {
+    ext {
+        androidCompileSdkVersion = 29
+        androidGradleVersion = "4.1.1"
+        androidMinSdkVersion = 22
+        androidTargetSdkVersion = 25
+        kotlinVersion = "1.4.21"
+
+        daggerVersion = "2.27"
+        glideVersion = "4.11.0"
+        mockkVersion = "1.10.0"
+        moshiVersion = "1.9.2"
+        retrofitVersion = "2.8.1"
+    }
+
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:$androidGradleVersion"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

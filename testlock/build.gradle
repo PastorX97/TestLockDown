@@ -1,0 +1,134 @@
+apply plugin: "com.android.application"
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-kapt"
+apply plugin: "kotlin-android-extensions"
+
+android {
+
+    compileSdkVersion androidCompileSdkVersion
+
+    defaultConfig {
+        applicationId "it.ibc.testlock"
+        versionName "1.0"
+
+        minSdkVersion androidMinSdkVersion
+        targetSdkVersion androidTargetSdkVersion
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        versionCode 1
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    applicationVariants.all { variant ->
+        if (variant.buildType.name == "release") {
+            variant.assembleProvider.get().doLast {
+                variant.outputs.all { output ->
+                    copy {
+                        from output.outputFile
+                        into "$rootDir/build"
+                        rename { String fileName ->
+                            "${variant.applicationId}-${variant.versionName}.apk"
+                        }
+                    }
+                }
+
+                def mappingFileName = "${variant.applicationId}-${variant.versionName}-mapping.txt"
+                if (variant.mappingFile != null) {
+                    copy {
+                        from variant.mappingFile
+                        into "$rootDir/build"
+                        rename { String fileName -> mappingFileName }
+                    }
+                } else {
+                    def file = new File("${rootDir}/build", mappingFileName)
+                    file.createNewFile()
+                    file.text = "Application not obfuscated"
+                }
+            }
+        }
+    }
+
+    signingConfigs {
+        release {}
+    }
+
+    buildTypes {
+        debug {
+            aaptOptions.cruncherEnabled false
+
+            //Orario compilazione (disabilitato per evitare rallentamenti)
+            buildConfigField "java.util.Date", "BUILD_TIME", "new java.util.Date()"
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+            shrinkResources true
+            signingConfig signingConfigs.release
+
+            //Orario compilazione
+            buildConfigField "java.util.Date", "BUILD_TIME",
+                    "new java.util.Date(${System.currentTimeMillis()}L)"
+        }
+    }
+
+    compileOptions {
+        encoding "UTF-8"
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/rxkotlin.properties'
+    }
+
+    sourceSets {
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
+
+    lintOptions {
+        warning 'InvalidPackage'
+        abortOnError false
+    }
+}
+
+androidExtensions {
+    experimental true
+}
+
+dependencies {
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation 'androidx.core:core-ktx:1.5.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    implementation "com.jakewharton.timber:timber:4.7.1"
+    implementation 'com.symbol:emdk:7.6.10'
+}
+
+repositories {
+    maven { url "http://srv-maven.ibc.it:8080/artifactory/Device/"}
+    google()
+    jcenter()
+    maven { url "https://jitpack.io" }
+}
