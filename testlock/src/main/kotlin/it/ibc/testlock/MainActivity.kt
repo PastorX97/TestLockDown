@@ -103,6 +103,7 @@ class MainActivity : AppCompatActivity() {
     <characteristic type="Profile">
         <parm name="ProfileName" value="$PROFILE_NAME"/>
         <characteristic type="UiMgr" version="9.1" >
+            <parm name="emdk_name" value="blk"/>
             <parm name="NavigationBarUsage" value="${if (locked) "2" else "1"}"/>
             <parm name="NotificationPullDown" value="${if (locked) "2" else "1"}"/>
             <parm name="OnScreenPowerButton" value="${if (locked) "2" else "1"}"/>
@@ -112,7 +113,7 @@ class MainActivity : AppCompatActivity() {
         )
         Timber.d("setDeviceLocked before sending xml config")
         val result = processProfile(
-            "${PROFILE_NAME}/UiMgr",
+            "${PROFILE_NAME}/UiMgr/blk",
             ProfileManager.PROFILE_FLAG.SET,
             codexml
         )
