@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
             <parm name="OnScreenPowerButton" value="${if (locked) "2" else "1"}"/>
         </characteristic>
     </characteristic>
-</wap-provisioningdoc>""".trimIndent()
+</wap-provisioningdoc>""".trimIndent().replace("\n","")
         )
         Timber.d("setDeviceLocked before sending xml config")
         val result = processProfile(
